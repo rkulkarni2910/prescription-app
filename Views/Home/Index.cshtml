@@ -1,0 +1,64 @@
+﻿@model List<PrescriptionApp.Models.Prescription>
+@{
+    ViewData["Title"] = "Walgreens Prescriptions";
+}
+
+<div class="mb-4 text-center">
+    <img src="~/images/walgreens-logo.png" alt="Walgreens" style="height: 60px;" class="mb-3">
+    <h2 class="text-primary">Prescription Management System</h2>
+</div>
+
+<div class="mb-3">
+    <a asp-controller="Prescription" asp-action="Add" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Add New Prescription
+    </a>
+</div>
+
+<table class="table table-bordered table-striped table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Medication Name</th>
+            <th>Fill Status</th>
+            <th>Cost</th>
+            <th>Request Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var prescription in Model) {
+            <tr>
+                <td>@prescription.MedicationName</td>
+                <td>
+                    <span class="badge @GetStatusBadgeClass(prescription.FillStatus)">
+                        @prescription.FillStatus
+                    </span>
+                </td>
+                <td>@prescription.Cost?.ToString("C")</td>
+                <td>@prescription.RequestTime.ToString("MM/dd/yyyy HH:mm")</td>
+                <td>
+                    <a asp-controller="Prescription" asp-action="Edit" 
+                       asp-route-id="@prescription.PrescriptionId"
+                       asp-route-slug="@prescription.Slug" 
+                       class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a asp-controller="Prescription" asp-action="Delete" 
+                       asp-route-id="@prescription.PrescriptionId"
+                       asp-route-slug="@prescription.Slug" 
+                       class="btn btn-sm btn-outline-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@functions {
+    public string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "New" => "bg-warning text-dark",
+            "Filled" => "bg-success",
+            "Pending" => "bg-info",
+            _ => "bg-secondary"
+        };
+    }
+}

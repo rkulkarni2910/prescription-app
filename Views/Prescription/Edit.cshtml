@@ -1,0 +1,49 @@
+@model PrescriptionApp.Models.Prescription
+@{
+    string title = ViewBag.Action + " Prescription";
+    ViewData["Title"] = title;
+}
+
+<h2>@ViewBag.Title</h2>
+
+<form asp-action="Edit" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="MedicationName" class="form-label">Medication Name</label>
+        <input asp-for="MedicationName" class="form-control">
+        <span asp-validation-for="MedicationName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="FillStatus" class="form-label">Fill Status</label>
+        <select asp-for="FillStatus" class="form-select">
+            <option value="">select a status</option> 
+            @foreach (string status in ViewBag.FillStatuses)
+            {
+                <option value="@status">@status</option>
+            }
+        </select>
+        <span asp-validation-for="FillStatus" class="text-danger"></span>
+   </div>
+
+    <div class="mb-3">
+        <label asp-for="Cost" class="form-label">Cost</label>
+        <input asp-for="Cost" class="form-control" type="number" step="0.01">
+        <span asp-validation-for="Cost" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Request Time</label>
+        <input type="text" class="form-control" value="@Model.RequestTime.ToString("MM/dd/yyyy HH:mm")" readonly>
+        <small class="form-text text-muted">
+            @(Model.PrescriptionId == 0 ? "Current system time" : "Original request time (cannot be modified)")
+        </small>
+        <input type="hidden" asp-for="RequestTime" />
+    </div>
+
+    <input type="hidden" asp-for="PrescriptionId" />
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

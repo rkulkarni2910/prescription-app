@@ -1,0 +1,16 @@
+@model PrescriptionApp.Models.Prescription
+@{
+    ViewData["Title"] = "Delete Prescription";
+}
+
+<h2>Confirm Deletion</h2>
+<h3>@Model.MedicationName - @Model.FillStatus</h3>
+<p>Cost: @Model.Cost?.ToString("C")</p>
+<p>Request Date: @Model.RequestTime.ToString("MM/dd/yyyy HH:mm")</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="PrescriptionId" />
+
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
