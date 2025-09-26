@@ -6,9 +6,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Add EF Core DI
+// Database configuration - FIXED FOR AZURE
 builder.Services.AddDbContext<PrescriptionContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("PrescriptionContext")));
+{
+    // Use SQLite for development, but ensure it works on Azure
+    options.UseSqlite(builder.Configuration.GetConnectionString("PrescriptionContext"));
+});
 
 // Add routing options
 builder.Services.AddRouting(options =>
@@ -36,5 +39,21 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}/{slug?}");
+
+// ADD THIS FOR AZURE - Ensure database is created
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<PrescriptionContext>();
+        context.Database.EnsureCreated(); // This will create the database if it doesn't exist
+    }
+    catch (Exception ex)
+    {
+        // Log the error (in production, use proper logging)
+        Console.WriteLine($"Database creation failed: {ex.Message}");
+    }
+}
 
 app.Run();
